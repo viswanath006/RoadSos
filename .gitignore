@@ -34,3 +34,11 @@ mobile/roadsos/*.sym
 # Env / secrets
 .env
 *.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

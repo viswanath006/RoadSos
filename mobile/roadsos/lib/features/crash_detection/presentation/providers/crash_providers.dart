@@ -334,6 +334,8 @@ class CrashDetectionNotifier extends StateNotifier<CrashDetectionState> {
     );
   }
 
+
+
   void _logCrashEvent({required String response, double? lat, double? lng}) {
     final event = CrashEvent(
       id: DateTime.now().millisecondsSinceEpoch.toString(),

@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>RoadSoS needs access to your location to share your exact coordinates with emergency contacts in case of an accident.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>RoadSoS needs background location access to monitor crash detection and trigger SOS alerts automatically.</string>
 </dict>
 </plist>

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../domain/models/first_aid_guide.dart';
 import '../providers/first_aid_provider.dart';
 import 'first_aid_detail_screen.dart';
+import 'ai_first_aid_screen.dart';
 
 class FirstAidScreen extends ConsumerStatefulWidget {
   const FirstAidScreen({super.key});
@@ -175,6 +176,19 @@ class _FirstAidScreenState extends ConsumerState<FirstAidScreen> {
                   ],
                 ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.psychology_outlined),
+        label: const Text('ASK AI ASSISTANT'),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AiFirstAidScreen(),
+            ),
+          );
+        },
       ),
     );
   }

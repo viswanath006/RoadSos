@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/connectivity_banner.dart';
@@ -107,6 +108,20 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          ValueListenableBuilder(
+            valueListenable: Hive.box('offline_settings_box').listenable(keys: ['voice_sos_enabled']),
+            builder: (context, Box box, _) {
+              final isEnabled = box.get('voice_sos_enabled', defaultValue: false) as bool;
+              return IconButton(
+                icon: Icon(
+                  isEnabled ? Icons.mic_rounded : Icons.mic_none_rounded,
+                  color: isEnabled ? Colors.teal : AppTheme.textSecondary,
+                  size: 28,
+                ),
+                onPressed: () => _showVoiceSosSheet(context),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.notifications_none_rounded, color: AppTheme.textSecondary, size: 28),
             onPressed: () {},
@@ -239,6 +254,118 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showVoiceSosSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final box = Hive.box('offline_settings_box');
+            bool isEnabled = box.get('voice_sos_enabled', defaultValue: false) as bool;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Hands-Free Voice SOS',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'When active, RoadSoS continuously listens for emergency keywords like "Help Help" or "Emergency" to automatically trigger SOS notifications hands-free.',
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, height: 1.4),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isEnabled ? Colors.teal.withOpacity(0.06) : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isEnabled ? Colors.teal.withOpacity(0.3) : Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              isEnabled ? Icons.mic_rounded : Icons.mic_off_rounded,
+                              color: isEnabled ? Colors.teal : Colors.grey,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              isEnabled ? 'Listening Active' : 'Voice SOS Disabled',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isEnabled ? Colors.teal : AppTheme.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Switch(
+                          value: isEnabled,
+                          activeColor: Colors.teal,
+                          onChanged: (value) async {
+                            await box.put('voice_sos_enabled', value);
+                            setModalState(() {
+                              isEnabled = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (isEnabled) ...[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _openSos(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.sosRed,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.record_voice_over_rounded),
+                      label: const Text(
+                        'SIMULATE VOICE TRIGGER ("HELP")',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
