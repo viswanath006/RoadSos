@@ -18,14 +18,8 @@ class ConnectivityBanner extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            isOffline ? Icons.wifi_off_rounded : Icons.wifi_rounded,
-            color: Colors.white,
-            size: 16,
-          ),
-          const SizedBox(width: 8),
           Text(
-            isOffline ? 'OFFLINE MODE' : 'ONLINE MODE',
+            isOffline ? '● OFFLINE MODE' : '● ONLINE MODE',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

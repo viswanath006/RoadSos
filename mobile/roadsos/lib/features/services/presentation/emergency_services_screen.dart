@@ -358,7 +358,7 @@ class _EmergencyServicesScreenState extends ConsumerState<EmergencyServicesScree
           ),
           const SizedBox(width: 8),
           _buildChip(
-            label: 'Ambulance',
+            label: 'Ambulances',
             isSelected: activeFilter == ServiceType.ambulance,
             onSelected: () =>
                 ref.read(selectedServiceTypeFilterProvider.notifier).state =

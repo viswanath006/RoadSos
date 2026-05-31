@@ -85,23 +85,32 @@ class _SosButtonState extends State<SosButton> with SingleTickerProviderStateMix
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
+                      '*',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        height: 0.8,
+                      ),
+                    ),
+                    Text(
                       'SOS',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 48,
+                        fontSize: 46,
                         fontWeight: FontWeight.w900,
                         letterSpacing: -1.0,
                         height: 1.0,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(height: 2),
                     Text(
-                      'TAP FOR HELP',
+                      'TAP',
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],

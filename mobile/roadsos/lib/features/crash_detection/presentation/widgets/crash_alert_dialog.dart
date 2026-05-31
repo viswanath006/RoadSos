@@ -173,13 +173,12 @@ class _CrashAlertDialogState extends ConsumerState<CrashAlertDialog> with Single
                                 Navigator.of(context).pop();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white12,
-                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.white,
+                                foregroundColor: const Color(0xFFE53935),
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
-                                  side: const BorderSide(color: Colors.white70, width: 2),
                                 ),
                               ),
                               child: const Text(
@@ -199,11 +198,12 @@ class _CrashAlertDialogState extends ConsumerState<CrashAlertDialog> with Single
                                 ref.read(crashDetectionProvider.notifier).triggerImmediateHelp();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFFE53935),
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
+                                  side: const BorderSide(color: Colors.white, width: 2),
                                 ),
                               ),
                               child: const Text(

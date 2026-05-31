@@ -32,48 +32,39 @@ class _FirstAidScreenState extends ConsumerState<FirstAidScreen> {
     );
   }
 
-  Widget _buildCategoryCard({
+  Widget _buildCategoryTile({
     required String title,
     required IconData icon,
     required Color color,
+    required Color backgroundColor,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: Colors.grey.shade100, width: 1.5),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
       ),
-      color: Colors.white,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: color, size: 36),
-              ),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                  height: 1.25,
-                ),
-              ),
-            ],
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 24),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.textPrimary,
           ),
         ),
+        trailing: const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+        onTap: onTap,
       ),
     );
   }
@@ -131,46 +122,48 @@ class _FirstAidScreenState extends ConsumerState<FirstAidScreen> {
           padding: const EdgeInsets.all(20),
           child: _isSearching
               ? _buildSearchResults(filteredGuides)
-              : GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.9,
+              : ListView(
                   children: [
-                    _buildCategoryCard(
+                    _buildCategoryTile(
                       title: 'Bleeding',
-                      icon: Icons.water_drop_outlined,
-                      color: AppTheme.sosRed,
+                      icon: Icons.water_drop_rounded,
+                      color: const Color(0xFFD32F2F),
+                      backgroundColor: const Color(0xFFFFEBEE),
                       onTap: () => _navigateToGuide(guides, 'bleeding'),
                     ),
-                    _buildCategoryCard(
-                      title: 'Fracture',
-                      icon: Icons.personal_injury_outlined,
-                      color: Colors.orange.shade700,
+                    _buildCategoryTile(
+                      title: 'Fractures',
+                      icon: Icons.construction_rounded,
+                      color: Colors.orange.shade800,
+                      backgroundColor: const Color(0xFFFFF3E0),
                       onTap: () => _navigateToGuide(guides, 'fracture'),
                     ),
-                    _buildCategoryCard(
+                    _buildCategoryTile(
                       title: 'Burns',
-                      icon: Icons.local_fire_department_outlined,
+                      icon: Icons.local_fire_department_rounded,
                       color: Colors.purple.shade700,
+                      backgroundColor: const Color(0xFFF3E5F5),
                       onTap: () => _navigateToGuide(guides, 'burns'),
                     ),
-                    _buildCategoryCard(
-                      title: 'Unconscious\nPerson',
-                      icon: Icons.person_outline,
+                    _buildCategoryTile(
+                      title: 'Unconscious Victim',
+                      icon: Icons.person_rounded,
                       color: Colors.blue.shade700,
+                      backgroundColor: const Color(0xFFE3F2FD),
                       onTap: () => _navigateToGuide(guides, 'unconscious'),
                     ),
-                    _buildCategoryCard(
-                      title: 'Road Accident\nVictim',
-                      icon: Icons.car_crash_outlined,
+                    _buildCategoryTile(
+                      title: 'Road Accident Victim',
+                      icon: Icons.car_crash_rounded,
                       color: Colors.green.shade700,
+                      backgroundColor: const Color(0xFFE8F5E9),
                       onTap: () => _navigateToGuide(guides, 'accident_victim'),
                     ),
-                    _buildCategoryCard(
+                    _buildCategoryTile(
                       title: 'CPR Basics',
-                      icon: Icons.favorite_border_rounded,
-                      color: Colors.pink.shade600,
+                      icon: Icons.add_box_rounded,
+                      color: Colors.red.shade800,
+                      backgroundColor: const Color(0xFFFFEBEE),
                       onTap: () => _navigateToGuide(guides, 'cpr'),
                     ),
                   ],

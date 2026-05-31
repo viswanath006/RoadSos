@@ -10,6 +10,7 @@ import '../../offline/presentation/screens/offline_dashboard_screen.dart';
 import '../../services/presentation/breakdown_screen.dart';
 import '../../services/presentation/emergency_services_screen.dart';
 import '../../sos/presentation/sos_screen.dart';
+import '../../contacts/presentation/screens/contact_list_screen.dart';
 import '../../crash_detection/presentation/providers/crash_providers.dart';
 import '../../crash_detection/presentation/widgets/crash_alert_dialog.dart';
 import 'widgets/quick_action_card.dart';
@@ -150,13 +151,38 @@ class HomeScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 20),
+                    // RoadSoS Logo & Shield
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            const Icon(Icons.shield, color: AppTheme.sosRed, size: 36),
+                            const Icon(Icons.add, color: Colors.white, size: 18),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'RoadSoS',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: AppTheme.textPrimary,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     const Text(
-                      'Stay Safe. We are here to help.',
+                      'Golden Hour • One Tap Emergency',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const Spacer(flex: 2),
@@ -219,41 +245,59 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                     ],
 
-                    // Horizontal Actions Layout
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // 2x2 Grid Actions Layout
+                    Column(
                       children: [
-                        QuickActionCard(
-                          title: 'Emergency\nServices',
-                          icon: Icons.local_hospital_outlined,
-                          color: AppTheme.sosRed,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const EmergencyServicesScreen(),
+                        Row(
+                          children: [
+                            QuickActionCard(
+                              title: 'Emergency\nServices',
+                              icon: Icons.emergency_outlined,
+                              color: AppTheme.sosRed,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const EmergencyServicesScreen(),
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            QuickActionCard(
+                              title: 'First Aid\nGuides',
+                              icon: Icons.medical_services_outlined,
+                              color: Colors.green.shade700,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const FirstAidScreen(),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 10),
-                        QuickActionCard(
-                          title: 'First Aid\nGuides',
-                          icon: Icons.medical_services_outlined,
-                          color: Colors.teal,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const FirstAidScreen(),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            QuickActionCard(
+                              title: 'Breakdown\nAssistance',
+                              icon: Icons.car_repair_outlined,
+                              color: Colors.orange.shade850,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const BreakdownScreen(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        QuickActionCard(
-                          title: 'Breakdown\nAssistance',
-                          icon: Icons.car_repair_outlined,
-                          color: Colors.blue,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const BreakdownScreen(),
+                            const SizedBox(width: 12),
+                            QuickActionCard(
+                              title: 'Emergency\nContacts',
+                              icon: Icons.people_outline_rounded,
+                              color: Colors.blue.shade700,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const ContactListScreen(),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
