@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: roadsos
+      POSTGRES_PASSWORD: roadsos_secret
+      POSTGRES_DB: roadsos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ../database/seed_services.sql:/docker-entrypoint-initdb.d/02_seed.sql
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://roadsos:roadsos_secret@db:5432/roadsos
+      SECRET_KEY: change-me-in-production-hackathon-demo
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app/app
+
+volumes:
+  postgres_data:

@@ -1,0 +1,36 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+
+# Android
+mobile/roadsos/android/.gradle/
+mobile/roadsos/android/captures/
+mobile/roadsos/android/local.properties
+mobile/roadsos/android/key.properties
+mobile/roadsos/android/app/debug.keystore
+mobile/roadsos/android/.idea/
+
+# iOS
+mobile/roadsos/ios/.symlinks/
+mobile/roadsos/ios/Flutter/Flutter.framework
+mobile/roadsos/ios/Flutter/Flutter.podspec
+mobile/roadsos/ios/Pods/
+mobile/roadsos/ios/Runner.xcworkspace/
+mobile/roadsos/*.sym
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Env / secrets
+.env
+*.env
