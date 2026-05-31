@@ -19,6 +19,8 @@ import 'features/crash_detection/data/models/crash_settings_adapter.dart';
 import 'features/crash_detection/data/models/crash_event_adapter.dart';
 import 'features/profile/domain/models/user_profile.dart';
 import 'features/profile/data/models/user_profile_adapter.dart';
+import 'features/satbridge/domain/sos_packet.dart';
+import 'features/satbridge/data/models/sos_packet_adapter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +35,7 @@ void main() async {
   Hive.registerAdapter(CrashSettingsAdapter());
   Hive.registerAdapter(CrashEventAdapter());
   Hive.registerAdapter(UserProfileAdapter());
+  Hive.registerAdapter(SosPacketAdapter());
 
   // Open boxes
   await Hive.openBox<EmergencyContact>('contacts_box');
@@ -45,6 +48,7 @@ void main() async {
   await Hive.openBox<CrashEvent>('crash_events_box');
   await Hive.openBox<UserProfile>('user_profile_box');
   await Hive.openBox<int>('service_clicks_box');
+  await Hive.openBox<SosPacket>('satbridge_packets_box');
 
   // Seed default offline first-aid guides
   final firstAidDataSource = FirstAidLocalDataSourceImpl();

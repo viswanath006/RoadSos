@@ -147,3 +147,130 @@ async def get_first_aid_guidance(payload: FirstAidRequest):
                 "- Do not move the patient unless there is immediate danger (e.g. fire)."
             )
         return FirstAidResponse(response=matched_response, is_mock=True)
+
+
+class CompressSosRequest(BaseModel):
+    report: str
+    latitude: float
+    longitude: float
+
+class CompressSosResponse(BaseModel):
+    compressed_code: str
+    is_mock: bool
+
+COMPRESSION_SYSTEM_INSTRUCTION = (
+    "You are an AI SOS Compression Engine. Your task is to convert emergency report text into a highly compressed standard SECM format.\n"
+    "Format rules:\n"
+    "The output must be a single string with fields separated by pipe '|' symbols:\n"
+    "<uid>|<lat>|<lon>|P<persons>|<severity>|I<injured>|C<children>|E<elderly>|F<food>|W<water>|T<epochSeconds>\n"
+    "Values lookup:\n"
+    "- <uid>: Generate a unique 6-character identifier beginning with 'SB', e.g. 'SB8293'.\n"
+    "- <lat>, <lon>: Use the provided latitude and longitude. Format to 4 decimal places.\n"
+    "- P<persons>: Count of total people affected/trapped. Default is 1 if unspecified.\n"
+    "- <severity>: Overall severity index: 'H' for high (life threatening, severe injuries, active flooding, trapped), 'M' for medium, 'L' for low.\n"
+    "- I<injured>: Count of injured people. Default is 0.\n"
+    "- C<children>: Count of children. Default is 0.\n"
+    "- E<elderly>: Count of elderly people. Default is 0.\n"
+    "- F<food>: '1' if they have food, '0' if they are out of food or critically need food.\n"
+    "- W<water>: '1' if they have water, '0' if they are out of water or critically need water.\n"
+    "- T<epochSeconds>: Current Unix epoch timestamp in seconds (use a reasonable default like 1775000000 if not known).\n"
+    "\n"
+    "CRITICAL: Output ONLY the exact compressed string. Do NOT include markdown code blocks, do NOT write explanations, do NOT include anything else. Example output: SB1234|16.5000|80.6400|P4|H|I1|C2|E0|F1|W0|T1775000000"
+)
+
+def local_compress_fallback(report: str, lat: float, lon: float) -> str:
+    import re, time
+    report_lower = report.lower()
+    
+    persons = 1
+    severity = 'M'
+    injured = 0
+    children = 0
+    elderly = 0
+    has_food = True
+    has_water = True
+
+    if any(k in report_lower for k in ['severe', 'critical', 'emergency', 'trapped', 'flood', 'drown']):
+        severity = 'H'
+    elif any(k in report_lower for k in ['minor', 'stable', 'low']):
+        severity = 'L'
+
+    injured_match = re.search(r'(\d+)\s*(?:injured|injury|hurt)', report_lower)
+    if injured_match:
+        injured = int(injured_match.group(1))
+    elif 'injured' in report_lower or 'injury' in report_lower:
+        injured = 1
+
+    children_match = re.search(r'(\d+)\s*(?:children|kid|child)', report_lower)
+    if children_match:
+        children = int(children_match.group(1))
+
+    elderly_match = re.search(r'(\d+)\s*(?:elderly|old|senior)', report_lower)
+    if elderly_match:
+        elderly = int(elderly_match.group(1))
+
+    persons_match = re.search(r'(\d+)\s*(?:people|person|persons|trapped|members)', report_lower)
+    if persons_match:
+        persons = int(persons_match.group(1))
+    else:
+        persons = 1 + injured + children + elderly
+
+    if any(k in report_lower for k in ['no food', 'out of food', 'need food']):
+        has_food = False
+    if any(k in report_lower for k in ['no water', 'out of water', 'thirsty', 'need water']):
+        has_water = False
+
+    uid = f"SB{int(time.time() * 1000) % 1000000}"
+    epoch = int(time.time())
+    food_val = 1 if has_food else 0
+    water_val = 1 if has_water else 0
+
+    return f"{uid}|{lat:.4f}|{lon:.4f}|P{persons}|{severity}|I{injured}|C{children}|E{elderly}|F{food_val}|W{water_val}|T{epoch}"
+
+@router.post("/compress-sos", response_model=CompressSosResponse)
+async def compress_sos_report(payload: CompressSosRequest):
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
+        fallback = local_compress_fallback(payload.report, payload.latitude, payload.longitude)
+        return CompressSosResponse(compressed_code=fallback, is_mock=True)
+
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+        
+        prompt = f"Latitude: {payload.latitude}\nLongitude: {payload.longitude}\nReport text: {payload.report}"
+        request_body = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": prompt}
+                    ]
+                }
+            ],
+            "systemInstruction": {
+                "parts": [
+                    {"text": COMPRESSION_SYSTEM_INSTRUCTION}
+                ]
+            }
+        }
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.post(url, json=request_body)
+            if res.status_code != 200:
+                fallback = local_compress_fallback(payload.report, payload.latitude, payload.longitude)
+                return CompressSosResponse(compressed_code=fallback, is_mock=True)
+            
+            data = res.json()
+            try:
+                code_text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                # Clean up any potential markdown formatting AI might include accidentally
+                code_text = code_text.replace("`", "").replace("html", "").strip()
+                return CompressSosResponse(compressed_code=code_text, is_mock=False)
+            except (KeyError, IndexError):
+                fallback = local_compress_fallback(payload.report, payload.latitude, payload.longitude)
+                return CompressSosResponse(compressed_code=fallback, is_mock=True)
+                
+    except Exception:
+        fallback = local_compress_fallback(payload.report, payload.latitude, payload.longitude)
+        return CompressSosResponse(compressed_code=fallback, is_mock=True)
+

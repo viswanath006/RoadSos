@@ -14,6 +14,7 @@ import '../../crash_detection/presentation/providers/crash_providers.dart';
 import '../../crash_detection/presentation/widgets/crash_alert_dialog.dart';
 import 'widgets/quick_action_card.dart';
 import 'widgets/sos_button.dart';
+import '../../satbridge/presentation/screens/satbridge_dashboard_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -80,6 +81,16 @@ class HomeScreen extends ConsumerWidget {
                 Navigator.pop(context);
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const OfflineDashboardScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.wifi_tethering_rounded, color: Colors.teal),
+              title: const Text('SatBridge SECM Mesh'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const SatBridgeDashboardScreen()),
                 );
               },
             ),
